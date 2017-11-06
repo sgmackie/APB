@@ -306,5 +306,6 @@ int main(int argc, char *argv[])
     //Close portsf library
     psf_finish();
 
+    //Report error number to terminal
     return ErrorCode;
 }
