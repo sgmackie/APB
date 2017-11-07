@@ -446,19 +446,20 @@ static int psf_wordsize(psf_stype type)
 
 
 #if defined _WIN32 && defined _MSC_VER
-/* fast convergent rounding 
-__inline long psf_round(double fval)
-{
-	int result;
-	__asm{
-		fld	fval
-		fistp	result
-		mov	eax,result
-	}
-	return result;
-}
+/* fast convergent rounding */
+//Inline Assembly no longer supported by VC64bit
+// __inline long psf_round(double fval)
+// {
+// 	int result;
+// 	__asm{
+// 		fld	fval
+// 		fistp	result
+// 		mov	eax,result
+// 	}
+// 	return result;
+// }
 
-#else */
+//#else
 /* slow convergent rounding ! */
 /* TODO: implement IEEE round-to-even */
 long psf_round(double val);

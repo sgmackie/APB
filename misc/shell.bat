@@ -2,6 +2,7 @@
 
 :: Set working directory path
 set SourceDir=%~dp0
+cd /d %SourceDir%..
 
 :: Set Visual Studio debug mode
 :: set VSCMD_DEBUG=1
@@ -16,5 +17,4 @@ set path=%SourceDir%;%path%
 @DOSKEY build=%SourceDir%\scripts\build_macro.bat
 @DOSKEY clean=%SourceDir%\scripts\clean_macro.bat
 
-:: Move to code directory
-cd /d K:\Audio\Editing\Current\Programming\The_Audio_Programming_Book\Test_Code\Chapter_2
+cd /d K:\Audio\Editing\Current\Programming\The_Audio_Programming_Book\Test_Code\Chapter_2\2.6.3\build
