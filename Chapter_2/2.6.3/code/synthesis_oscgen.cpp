@@ -7,10 +7,10 @@
 #define BUFFER_SIZE 1024
 
 //Argument list from 0
-enum {ARG_NAME, ARG_OUTFILE, ARG_WAVEFORM, ARG_DURATION, ARG_AMPLITUDE, ARG_FREQUENCY, ARG_SAMPLE_RATE, ARG_NUM_OSCILLATORS, ARG_NUM_CHANNELS, ARG_NUM_ARGS};
+enum {ARG_NAME, ARG_OUTFILE, ARG_WAVEFORM, ARG_DURATION, ARG_SAMPLE_RATE, ARG_AMPLITUDE, ARG_FREQUENCY, ARG_NUM_ARGS};
 
 //Waveform type arguments
-enum {WAVE_SQAURE, WAVE_SAW_DOWN, WAVE_SAW_UP, WAVE_TRIANGLE, WAVE_NUM_TYPES};
+enum {WAVE_TRIANGLE, WAVE_SQAURE, WAVE_SAW_DOWN, WAVE_SAW_UP, WAVE_NUM_TYPES};
 
 int main(int argc, char *argv[])
 {
@@ -23,11 +23,7 @@ int main(int argc, char *argv[])
     double Duration, Frequency, Amplitude;
     int WaveType;
     TICKFUNCTION TickSelect;
-    WAVEOSC **OscillatorBank = NULL;
-    double *OscAmp = NULL, *OscFrequency = NULL;
-    unsigned long NumOscs;
-
-    int test;
+    WAVEOSC *TestOsc = NULL;
 
     //Breakpoint stream variables
     double AmplitudeValue_Min, AmplitudeValue_Max;
@@ -61,11 +57,11 @@ int main(int argc, char *argv[])
     //Check Waveform argument  
     WaveType = atoi(argv[ARG_WAVEFORM]);
 
-    if(WaveType < WAVE_SQAURE || WaveType > WAVE_NUM_TYPES)
-    {
-        fprintf(stderr, "Error: Incorrect waveform argument\n");
-        return 1;
-    }
+    // if(WaveType < WAVE_SINE || WaveType > WAVE_NUM_TYPES)
+    // {
+    //     fprintf(stderr, "Error: Incorrect waveform argument\n");
+    //     return 1;
+    // }
 
     //Stage 2: Handle output file
     //Define output file properties
@@ -123,38 +119,10 @@ int main(int argc, char *argv[])
         AmplitudeStream = breakpoint_Stream_New(InputBreakpointFile, OutputFile_Properties.srate, &AmplitudeStream_Size);
     }
 
-    //Amplitude and Frequency arrays
-    OscAmp = (double *) malloc(NumOscs * sizeof(double));
-
-    if(OscAmp == NULL)
-    {
-        puts("Error: No memory\n");
-        ErrorCode++;
-        goto memory_cleanup;
-    }
-    
-    OscFrequency = (double *) malloc(NumOscs * sizeof(double));
-    
-    if(OscAmp == NULL)
-    {
-        puts("Error: No memory\n");
-        ErrorCode++;
-        goto memory_cleanup;
-    }
-
-    OscillatorBank = (WAVEOSC **) malloc(NumOscs * sizeof(WAVEOSC *));
-    
-    if(OscillatorBank == NULL)
-    {
-        puts("Error: No memory\n");
-        ErrorCode++;
-        goto memory_cleanup;
-    }
-
     //Call function to create oscillator
-    OscillatorBank = synthesis_Osc_New(OutputFile_Properties.srate);
+    TestOsc = synthesis_Osc_New(OutputFile_Properties.srate);
     
-    if(OscillatorBank == NULL)
+    if(TestOsc == NULL)
     {
         puts("Error: No memory for oscillator\n");
         ErrorCode++;
@@ -230,7 +198,7 @@ int main(int argc, char *argv[])
                 Amplitude = breakpoint_Stream_ValueAtTime(AmplitudeStream);
             }
             
-            FramesOutput[j] = (float) (Amplitude * TickSelect(OscillatorBank, Frequency));
+            FramesOutput[j] = (float) (Amplitude * TickSelect(TestOsc, Frequency));
         }
 
         if(psf_sndWriteFloatFrames(OutputFile, FramesOutput, BufferSize) != BufferSize)
@@ -276,9 +244,9 @@ int main(int argc, char *argv[])
         free(FramesOutput);
     }
 
-    if(OscillatorBank)
+    if(TestOsc)
     {
-        free(OscillatorBank);
+        free(TestOsc);
     }
 
     if(AmplitudeStream)
