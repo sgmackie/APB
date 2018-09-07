@@ -13,8 +13,8 @@ call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary
 :: Set path for compiler to reference
 set path=%SourceDir%;%path% 
 
+set INCLUDE=%SourceDir%..\misc\include;%INCLUDE%
+
 :: Set build and clean macros for terminal
 @DOSKEY build=%SourceDir%\scripts\build_macro.bat
 @DOSKEY clean=%SourceDir%\scripts\clean_macro.bat
-
-cd /d K:\Audio\Editing\Current\Programming\The_Audio_Programming_Book\Test_Code\Chapter_2\2.6.3\build

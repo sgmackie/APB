@@ -57,13 +57,13 @@ int main(int argc, char *argv[])
     //Check Waveform argument  
     WaveType = atoi(argv[ARG_WAVEFORM]);
 
-    // if(WaveType < WAVE_SINE || WaveType > WAVE_NUM_TYPES)
-    // {
-    //     fprintf(stderr, "Error: Incorrect waveform argument\n");
-    //     return 1;
-    // }
+    if(WaveType < WAVE_SINE || WaveType > WAVE_NUM_TYPES)
+    {
+        fprintf(stderr, "Error: Incorrect waveform argument\n");
+        return 1;
+    }
 
-    //Stage 2: Handle output file
+    Stage 2: Handle output file
     //Define output file properties
     OutputFile_Properties.srate = atoi(argv[ARG_SAMPLE_RATE]);
 

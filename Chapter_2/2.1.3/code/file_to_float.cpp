@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "../../../misc/psfmaster/include/portsf.h"
+#include "../../../misc/include/debug.h"
 
 enum {ARG_NAME, ARG_INFILE, ARG_OUTFILE, ARG_BUFFER_SIZE, ARG_NUM_ARGS};
 
@@ -20,12 +21,16 @@ int main(int argc, char *argv[])
 
     printf("file_to_float: Convert soundfile to float sample format\n");
 
-    if(argc < ARG_NUM_ARGS)
-    {
-        fprintf(stderr, "Error: Insufficient number of arguments\n"
-                        "Usage: file_to_float.exe, input file, output file, buffer size\n");
-        return 1;
-    }
+    // if(argc < ARG_NUM_ARGS)
+    // {
+    //     fprintf(stderr, "Error: Insufficient number of arguments\n"
+    //                     "Usage: file_to_float.exe, input file, output file, buffer size\n");
+    //     return 1;
+    // }
+
+    debug_CheckError(argc == ARG_NUM_ARGS, "Insufficient number of arguments\tUsage: file_to_float.exe, input file, output file, buffer size\n");
+
+
 
     if(psf_init())
     {
@@ -164,5 +169,11 @@ int main(int argc, char *argv[])
 
     psf_finish();
 
+    // return ErrorCode;
+    return 0;
+
+error:
+
     return ErrorCode;
+
 }
