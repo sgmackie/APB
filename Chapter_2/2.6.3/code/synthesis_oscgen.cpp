@@ -1,26 +1,32 @@
+//TODO: Continue going through code; moving variables closer to their first use, functioning out reusable code, creating header for common functions commenting
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "../../../misc/psfmaster/include/portsf.h"
-#include "../../../misc/include/wave.h"
-#include "../../../misc/include/breakpoints.h"
+#include "../../../external/wave.h"
+#include "../../../external/breakpoints.h"
 
 #define BUFFER_SIZE 1024
+
+typedef struct MEMORYBLOCKS
+{
+    unsigned long BlocksTotal;
+    long RemainderBlocks;
+} MEMORYBLOCKS;
+
+void output_TotalOuputSampleSize(unsigned long &CalculatedBlocks, long &RemainderBlocks, double Duration, int SampleRate, long BufferSize);
 
 //Argument list from 0
 enum {ARG_NAME, ARG_OUTFILE, ARG_WAVEFORM, ARG_DURATION, ARG_SAMPLE_RATE, ARG_AMPLITUDE, ARG_FREQUENCY, ARG_NUM_ARGS};
 
 //Waveform type arguments
-enum {WAVE_TRIANGLE, WAVE_SQAURE, WAVE_SAW_DOWN, WAVE_SAW_UP, WAVE_NUM_TYPES};
+enum {WAVE_SINE, WAVE_TRIANGLE, WAVE_SQAURE, WAVE_SAW_DOWN, WAVE_SAW_UP, WAVE_NUM_TYPES};
 
 int main(int argc, char *argv[])
 {
     //Stage 1: Declare
-    PSF_PROPS OutputFile_Properties; //File properties struct from portsf
-    unsigned long Blocks_Total, OutputSamples_Total;
-    long Blocks_Remainder;
-
     //Oscillator variables
-    double Duration, Frequency, Amplitude;
+    double Frequency, Amplitude;
     int WaveType;
     TICKFUNCTION TickSelect;
     WAVEOSC *TestOsc = NULL;
@@ -37,7 +43,6 @@ int main(int argc, char *argv[])
     float *FramesOutput = NULL;
     psf_format OutputFile_Format = PSF_FMT_UNKNOWN;
     PSF_CHPEAK *PeakData = NULL; //Peak data struct from portsf
-    long BufferSize = BUFFER_SIZE; //Unsigned, buffer size cannot be a negative number
 
     printf("syntheis_sinetest.exe: Generate mono sine wave\n");
     
@@ -63,8 +68,9 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    Stage 2: Handle output file
+    //Stage 2: Handle output file
     //Define output file properties
+    PSF_PROPS OutputFile_Properties;
     OutputFile_Properties.srate = atoi(argv[ARG_SAMPLE_RATE]);
 
     if(OutputFile_Properties.srate <= 0.0)
@@ -78,23 +84,21 @@ int main(int argc, char *argv[])
     OutputFile_Properties.chformat = STDWAVE;    
 
     //Calculate samples required in blocks and any remainder
-    Duration = atof(argv[ARG_DURATION]);
+    double Duration = atof(argv[ARG_DURATION]);
 
     if(Duration <= 0.0)
     {
         fprintf(stderr, "Error: Duration must be postive\n");
         return 1;
     }
+
+    //TODO: Tidy this function up
+    MEMORYBLOCKS SampleBlocks;
+    long BufferSize = BUFFER_SIZE; //Unsigned, buffer size cannot be a negative number
+
+    output_TotalOuputSampleSize(SampleBlocks.BlocksTotal, SampleBlocks.RemainderBlocks, Duration, OutputFile_Properties.srate, BufferSize);
     
-    OutputSamples_Total = (unsigned long) (Duration * OutputFile_Properties.srate + 0.5);
-    Blocks_Total = OutputSamples_Total / BufferSize;
-    Blocks_Remainder = OutputSamples_Total - Blocks_Total * BufferSize;
-    
-    if(Blocks_Remainder)
-    {
-        Blocks_Total++;
-    }
-    
+
     Frequency = atof(argv[ARG_FREQUENCY]);
 
     //Handle breakpoint file
@@ -184,11 +188,11 @@ int main(int argc, char *argv[])
     printf("Info: Processing...\n");
 
     //Main loop
-    for(unsigned long i = 0; i < Blocks_Total; i++)
+    for(unsigned long i = 0; i < SampleBlocks.BlocksTotal; i++)
     {
-        if(i == Blocks_Total - 1)
+        if(i == SampleBlocks.BlocksTotal - 1)
         {
-            BufferSize = Blocks_Remainder;
+            BufferSize = SampleBlocks.RemainderBlocks;
         }
 
         for(long j = 0; j < BufferSize; j++)
@@ -273,4 +277,18 @@ int main(int argc, char *argv[])
 
     //Report error code
     return ErrorCode;
+}
+
+
+void output_TotalOuputSampleSize(unsigned long &CalculatedBlocks, long &RemainderBlocks, double Duration, int SampleRate, long BufferSize)
+{
+    unsigned long OutputSamplesTotal;
+    OutputSamplesTotal = (unsigned long) (Duration * SampleRate + 0.5);
+
+    CalculatedBlocks = OutputSamplesTotal / BufferSize;
+    RemainderBlocks = OutputSamplesTotal - CalculatedBlocks * BufferSize;
+    if(RemainderBlocks)
+    {
+        CalculatedBlocks++;
+    }
 }

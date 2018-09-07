@@ -6,10 +6,6 @@ Command Prompt.lnk
 build/
 misc/
 
-#External libs and Wwise Project folder
-Wwise_Project/
-project/external/wwise
-
 #Visual Studio files
 *.pdb
 *.ilk
