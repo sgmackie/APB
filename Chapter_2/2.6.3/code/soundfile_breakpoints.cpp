@@ -1,6 +1,6 @@
 #include "stdio.h"
 #include "stdlib.h"
-#include "../../../misc/include/breakpoints.h"
+#include "../../../external/file_breakpoints.h"
 
 #define NPOINTS (64)
 

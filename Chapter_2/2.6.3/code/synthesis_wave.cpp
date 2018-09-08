@@ -1,7 +1,7 @@
 #include "stdlib.h"
 #include "stdio.h"
 #include "math.h"
-#include "../../../misc/include/wave.h"
+#include "../../../external/synth_waves.h"
 
 #define OSC_WRAP_PHASE  if(SimpleOsc->CurrentPhase > TWOPI) SimpleOsc->CurrentPhase -= TWOPI;	\
 if(SimpleOsc->CurrentPhase < 0.0) SimpleOsc->CurrentPhase += TWOPI

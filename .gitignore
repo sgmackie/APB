@@ -9,6 +9,8 @@ misc/
 #Visual Studio files
 *.pdb
 *.ilk
+*.obj
+*.exe
 
 #Audio Data
 *.wav

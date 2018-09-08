@@ -3,18 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../../../misc/psfmaster/include/portsf.h"
-#include "../../../external/wave.h"
-#include "../../../external/breakpoints.h"
-
-#define BUFFER_SIZE 1024
-
-typedef struct MEMORYBLOCKS
-{
-    unsigned long BlocksTotal;
-    long RemainderBlocks;
-} MEMORYBLOCKS;
-
-void output_TotalOuputSampleSize(unsigned long &CalculatedBlocks, long &RemainderBlocks, double Duration, int SampleRate, long BufferSize);
+#include "../../../external/synth_waves.h"
+#include "../../../external/file_breakpoints.h"
+#include "../../../external/file_memory.h"
 
 //Argument list from 0
 enum {ARG_NAME, ARG_OUTFILE, ARG_WAVEFORM, ARG_DURATION, ARG_SAMPLE_RATE, ARG_AMPLITUDE, ARG_FREQUENCY, ARG_NUM_ARGS};
@@ -37,7 +28,7 @@ int main(int argc, char *argv[])
     unsigned long AmplitudeStream_Size = 0;
     FILE *InputBreakpointFile = NULL;
 
-    //Initialise dyanmic variables to defaults
+    //Initialise dynamic variables to defaults
     int OutputFile = -1;
     int ErrorCode = 0;
     float *FramesOutput = NULL;
@@ -96,8 +87,7 @@ int main(int argc, char *argv[])
     MEMORYBLOCKS SampleBlocks;
     long BufferSize = BUFFER_SIZE; //Unsigned, buffer size cannot be a negative number
 
-    output_TotalOuputSampleSize(SampleBlocks.BlocksTotal, SampleBlocks.RemainderBlocks, Duration, OutputFile_Properties.srate, BufferSize);
-    
+    file_TotalOuputSampleSize(SampleBlocks.BlocksTotal, SampleBlocks.RemainderBlocks, Duration, OutputFile_Properties.srate, BufferSize);
 
     Frequency = atof(argv[ARG_FREQUENCY]);
 
@@ -277,18 +267,4 @@ int main(int argc, char *argv[])
 
     //Report error code
     return ErrorCode;
-}
-
-
-void output_TotalOuputSampleSize(unsigned long &CalculatedBlocks, long &RemainderBlocks, double Duration, int SampleRate, long BufferSize)
-{
-    unsigned long OutputSamplesTotal;
-    OutputSamplesTotal = (unsigned long) (Duration * SampleRate + 0.5);
-
-    CalculatedBlocks = OutputSamplesTotal / BufferSize;
-    RemainderBlocks = OutputSamplesTotal - CalculatedBlocks * BufferSize;
-    if(RemainderBlocks)
-    {
-        CalculatedBlocks++;
-    }
 }
