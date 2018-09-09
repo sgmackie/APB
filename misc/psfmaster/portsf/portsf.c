@@ -3247,7 +3247,7 @@ int psf_sndSeek(int sfd,int offset, int mode)
 /* TODO: add func to get format from file header */
 psf_format psf_getFormatExt(const char *path)
 {
-	char *lastdot;
+	const char *lastdot;
 	if(path==NULL || (strlen(path) < 4))
 		return PSF_FMT_UNKNOWN;				/* TODO: support RAW data... */
 	lastdot = strrchr(path,'.');

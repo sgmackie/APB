@@ -1,3 +1,6 @@
+#ifndef synth_waves_h
+#define synth_waves_h
+
 #include "stdio.h"
 #include "stdlib.h"
 #include "math.h"
@@ -40,3 +43,5 @@ double synthesis_TriangleTick(WAVEOSC *SimpleOsc, double Frequency);
 
 //Pointer to function for waveform selection
 typedef double (*TICKFUNCTION)(WAVEOSC *TestOsc, double);
+
+#endif

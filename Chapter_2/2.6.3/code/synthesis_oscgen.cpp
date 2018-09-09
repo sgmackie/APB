@@ -7,6 +7,12 @@
 #include "../../../external/file_breakpoints.h"
 #include "../../../external/file_memory.h"
 
+//Unity build
+#include "..\code\synthesis_wave.cpp"
+#include "..\code\soundfile_breakpoints.cpp"
+#include "..\..\..\misc\psfmaster\portsf\portsf.c"
+#include "..\..\..\misc\psfmaster\portsf\ieee80.c"
+
 //Argument list from 0
 enum {ARG_NAME, ARG_OUTFILE, ARG_WAVEFORM, ARG_DURATION, ARG_SAMPLE_RATE, ARG_AMPLITUDE, ARG_FREQUENCY, ARG_NUM_ARGS};
 
@@ -19,7 +25,6 @@ int main(int argc, char *argv[])
     //Oscillator variables
     double Frequency, Amplitude;
     int WaveType;
-    TICKFUNCTION TickSelect;
     WAVEOSC *TestOsc = NULL;
 
     //Breakpoint stream variables
@@ -187,6 +192,8 @@ int main(int argc, char *argv[])
 
         for(long j = 0; j < BufferSize; j++)
         {
+            TICKFUNCTION TickSelect = nullptr;
+
             if(AmplitudeStream)
             {
                 Amplitude = breakpoint_Stream_ValueAtTime(AmplitudeStream);

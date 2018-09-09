@@ -1,3 +1,6 @@
+#ifndef file_memory_h
+#define file_memory_h
+
 #define BUFFER_SIZE 1024
 
 //Struct to hold both the number of memory blocks to allocate and any remainders from the calculation
@@ -22,3 +25,5 @@ void file_TotalOuputSampleSize(unsigned long &CalculatedBlocks, long &RemainderB
         CalculatedBlocks++;
     }
 }
+
+#endif

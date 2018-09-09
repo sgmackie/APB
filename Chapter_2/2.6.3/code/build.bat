@@ -10,8 +10,7 @@ if not exist %BuildDir% mkdir %BuildDir%
 pushd %BuildDir%
 
 :: Set compiler arguments
-set Files=..\code\synthesis_oscgen.cpp ..\code\synthesis_wave.cpp ..\code\soundfile_breakpoints.cpp
-set Includes=..\..\..\misc\psfmaster\portsf\portsf.c ..\..\..\misc\psfmaster\portsf\ieee80.c
+set Files=..\code\synthesis_oscgen.cpp
 set ObjDir=.\obj\
 
 :: Set compiler flags:
@@ -24,7 +23,7 @@ set CompilerFlags=-Zi -FC -Fo%ObjDir%
 if not exist %ObjDir% mkdir %ObjDir%
 
 :: Run Visual Studio compiler
-cl %CompilerFlags% %Files% %Includes%
+cl %CompilerFlags% %Files%
 
 :: Jump out of build directory
 popd

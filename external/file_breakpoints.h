@@ -1,3 +1,6 @@
+#ifndef file_breakpoints_h
+#define file_breakpoints_h
+
 #include "stdio.h"
 #include "stdlib.h"
 
@@ -39,3 +42,5 @@ void breakpoint_Stream_Free(BREAKPOINT_STREAM *Stream);
 
 //Find value for specified time, interpolating between breakpoints
 double breakpoint_Stream_ValueAtTime(BREAKPOINT_STREAM *Stream);
+
+#endif
