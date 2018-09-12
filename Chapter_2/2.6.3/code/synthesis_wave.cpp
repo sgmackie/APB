@@ -1,13 +1,10 @@
-#include "stdlib.h"
-#include "stdio.h"
-#include "math.h"
 #include "../../../external/synth_waves.h"
 
 #define OSC_WRAP_PHASE  if(SimpleOsc->CurrentPhase > TWOPI) SimpleOsc->CurrentPhase -= TWOPI;	\
 if(SimpleOsc->CurrentPhase < 0.0) SimpleOsc->CurrentPhase += TWOPI
 
 //Combined creation and initilaisation function, must be freed after use due to malloc
-WAVEOSC *synthesis_Osc_New(double SampleRate)
+WAVEOSC *synthesis_Osc_New(float64 SampleRate)
 {
     WAVEOSC *SimpleOsc;
 
@@ -26,9 +23,9 @@ WAVEOSC *synthesis_Osc_New(double SampleRate)
     return SimpleOsc;
 }
 
-double synthesis_SineTick(WAVEOSC *SimpleOsc, double Frequency)
+float64 synthesis_SineTick(WAVEOSC *SimpleOsc, float64 Frequency)
 {
-    double SineValue;
+    float64 SineValue;
 
     SineValue = sin(SimpleOsc->CurrentPhase);
 
@@ -45,9 +42,9 @@ double synthesis_SineTick(WAVEOSC *SimpleOsc, double Frequency)
     return SineValue;
 }
 
-double synthesis_SquareTick(WAVEOSC *SimpleOsc, double Frequency)
+float64 synthesis_SquareTick(WAVEOSC *SimpleOsc, float64 Frequency)
 {
-    double SquareValue;
+    float64 SquareValue;
 
     if(SimpleOsc->CurrentFrequency != Frequency)
     {
@@ -72,9 +69,9 @@ double synthesis_SquareTick(WAVEOSC *SimpleOsc, double Frequency)
     return SquareValue;
 }
 
-double synthesis_SawDownTick(WAVEOSC *SimpleOsc, double Frequency)
+float64 synthesis_SawDownTick(WAVEOSC *SimpleOsc, float64 Frequency)
 {
-    double SawDownValue;
+    float64 SawDownValue;
 
     if(SimpleOsc->CurrentFrequency != Frequency)
     {
@@ -91,9 +88,9 @@ double synthesis_SawDownTick(WAVEOSC *SimpleOsc, double Frequency)
     return SawDownValue;
 }
 
-double synthesis_SawUpTick(WAVEOSC *SimpleOsc, double Frequency)
+float64 synthesis_SawUpTick(WAVEOSC *SimpleOsc, float64 Frequency)
 {
-    double SawUpValue;
+    float64 SawUpValue;
 
     if(SimpleOsc->CurrentFrequency != Frequency)
     {
@@ -110,9 +107,9 @@ double synthesis_SawUpTick(WAVEOSC *SimpleOsc, double Frequency)
     return SawUpValue;
 }
 
-double synthesis_TriangleTick(WAVEOSC *SimpleOsc, double Frequency)
+float64 synthesis_TriangleTick(WAVEOSC *SimpleOsc, float64 Frequency)
 {
-    double TriangleValue;
+    float64 TriangleValue;
 
     if(SimpleOsc->CurrentFrequency != Frequency)
     {

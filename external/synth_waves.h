@@ -1,8 +1,6 @@
 #ifndef synth_waves_h
 #define synth_waves_h
 
-#include "stdio.h"
-#include "stdlib.h"
 #include "math.h"
 
 #ifndef M_PI
@@ -13,35 +11,38 @@
 #define TWOPI (2 * M_PI)
 #endif
 
+//Waveform type arguments
+enum {WAVE_SINE, WAVE_TRIANGLE, WAVE_SQAURE, WAVE_SAW_DOWN, WAVE_SAW_UP, WAVE_NUM_TYPES};
+
 //Structure for oscillator
-typedef struct WaveOsc
+typedef struct WAVEOSC
 {
-    double TwoPi_Over_SampleRate;
-    double CurrentFrequency;
-    double CurrentPhase;
-    double PhaseIncrement;
+    float64 TwoPi_Over_SampleRate;
+    float64 CurrentFrequency;
+    float64 CurrentPhase;
+    float64 PhaseIncrement;
 }   WAVEOSC;
 
 //Combined creation and initilaisation function, must be freed after use due to malloc
-WAVEOSC *synthesis_Osc_New(double SampleRate);
+WAVEOSC *synthesis_Osc_New(float64 SampleRate);
 
 //Waveform types
 //Sine
-double synthesis_SineTick(WAVEOSC *SimpleOsc, double Frequency);
+float64 synthesis_SineTick(WAVEOSC *SimpleOsc, float64 Frequency);
 
 //Square
-double synthesis_SquareTick(WAVEOSC *SimpleOsc, double Frequency);
+float64 synthesis_SquareTick(WAVEOSC *SimpleOsc, float64 Frequency);
 
 //Sawtooth down
-double synthesis_SawDownTick(WAVEOSC *SimpleOsc, double Frequency);
+float64 synthesis_SawDownTick(WAVEOSC *SimpleOsc, float64 Frequency);
 
 //Sawtooth up
-double synthesis_SawUpTick(WAVEOSC *SimpleOsc, double Frequency);
+float64 synthesis_SawUpTick(WAVEOSC *SimpleOsc, float64 Frequency);
 
 //Triangle
-double synthesis_TriangleTick(WAVEOSC *SimpleOsc, double Frequency);
+float64 synthesis_TriangleTick(WAVEOSC *SimpleOsc, float64 Frequency);
 
 //Pointer to function for waveform selection
-typedef double (*TICKFUNCTION)(WAVEOSC *TestOsc, double);
+typedef float64 (*TICKFUNCTION)(WAVEOSC *TestOsc, float64);
 
 #endif

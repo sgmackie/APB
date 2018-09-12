@@ -1,13 +1,11 @@
-#include "stdio.h"
-#include "stdlib.h"
 #include "../../../external/file_breakpoints.h"
 
 #define NPOINTS (64)
 
 //Extract points read from file
-BREAKPOINT_FORMAT breakpoint_Point_MaxValue(const BREAKPOINT_FORMAT* ReadPoints, long ReadPoints_Total)
+BREAKPOINT_FORMAT breakpoint_Point_MaxValue(const BREAKPOINT_FORMAT* ReadPoints, int64 ReadPoints_Total)
 {
-    int i;
+    int32 i;
     BREAKPOINT_FORMAT MaxPoint;
 
     //Start from first point
@@ -27,11 +25,11 @@ BREAKPOINT_FORMAT breakpoint_Point_MaxValue(const BREAKPOINT_FORMAT* ReadPoints,
 }
 
 //Function for reading input text file
-BREAKPOINT_FORMAT *breakpoint_GetPoints(FILE *FilePointer, unsigned long *PointerSize)
+BREAKPOINT_FORMAT *breakpoint_GetPoints(FILE *FilePointer, uint64 *PointerSize)
 {
-    int TextFile_Output;
-    long ReadPoints_Total = 0, ArraySize = 64;
-    double ReadPoints_LastTime = 0.0;
+    int32 TextFile_Output;
+    int64 ReadPoints_Total = 0, ArraySize = 64;
+    float64 ReadPoints_LastTime = 0.0;
     BREAKPOINT_FORMAT* ReadPoints = NULL;
     char Breakpoint_LineLength[80];
 
@@ -60,19 +58,19 @@ BREAKPOINT_FORMAT *breakpoint_GetPoints(FILE *FilePointer, unsigned long *Pointe
         
         if(TextFile_Output == 0)
         {
-            fprintf(stderr, "Error: Line &d has non-nummeric value\n", ReadPoints_Total+1);
+            fprintf(stderr, "Error: Line &lld has non-nummeric value\n", ReadPoints_Total+1);
             break;
         }
    
         if(TextFile_Output == 1)
         {
-            fprintf(stderr, "Error: Incomplete breakpoint found at point %d\n", ReadPoints_Total+1);
+            fprintf(stderr, "Error: Incomplete breakpoint found at point %lld\n", ReadPoints_Total+1);
             break;
         }
 
         if(ReadPoints[ReadPoints_Total].BreakpointTime < ReadPoints_LastTime)
         {
-            fprintf(stderr, "Error: Time not increasing at point %d\n", ReadPoints_Total+1);
+            fprintf(stderr, "Error: Time not increasing at point %lld\n", ReadPoints_Total+1);
             break;
         }
 
@@ -107,11 +105,11 @@ BREAKPOINT_FORMAT *breakpoint_GetPoints(FILE *FilePointer, unsigned long *Pointe
 }
 
 //Scans input file for out of range values, returning "1" if passing the test
-int breakpoint_Input_RangeCheck(const BREAKPOINT_FORMAT *ReadPoints, double ValueMin, double ValueMax, unsigned long BreakpointFile_Size)
+int32 breakpoint_Input_RangeCheck(const BREAKPOINT_FORMAT *ReadPoints, float64 ValueMin, float64 ValueMax, uint64 BreakpointFile_Size)
 {
-    int RangeCheck = 1;
+    int32 RangeCheck = 1;
 
-    for(unsigned long i = 0; i < BreakpointFile_Size; i++)
+    for(uint64 i = 0; i < BreakpointFile_Size; i++)
     {
         if(ReadPoints[i].BreakpointValue < ValueMin || ReadPoints[i].BreakpointValue > ValueMax)
         {
@@ -124,11 +122,11 @@ int breakpoint_Input_RangeCheck(const BREAKPOINT_FORMAT *ReadPoints, double Valu
 }
 
 //Find value for specified time, interpolating between breakpoints
-double breakpoint_Point_ValueAtTime(const BREAKPOINT_FORMAT *ReadPoints, unsigned long BreakpointFile_Size, double TimeSpan)
+float64 breakpoint_Point_ValueAtTime(const BREAKPOINT_FORMAT *ReadPoints, uint64 BreakpointFile_Size, float64 TimeSpan)
 {
-    unsigned long i;
+    uint64 i;
     BREAKPOINT_FORMAT TimeLeft, TimeRight;
-    double Fraction, Value, Width;
+    float64 Fraction, Value, Width;
 
     //Scan until span of specified time is found
     for(i = 1; i < BreakpointFile_Size; i++)
@@ -160,11 +158,11 @@ double breakpoint_Point_ValueAtTime(const BREAKPOINT_FORMAT *ReadPoints, unsigne
     return Value;
 }
 
-BREAKPOINT_STREAM *breakpoint_Stream_New(FILE *InputFile, unsigned long SampleRate, unsigned long *BreakpointFile_Size)
+BREAKPOINT_STREAM *breakpoint_Stream_New(FILE *InputFile, uint64 SampleRate, uint64 *BreakpointFile_Size)
 {
     BREAKPOINT_STREAM *Stream;
     BREAKPOINT_FORMAT *ReadPoints;
-    unsigned long NumPoints;
+    uint64 NumPoints;
 
     if(SampleRate == 0)
     {
@@ -228,9 +226,9 @@ void breakpoint_Stream_Free(BREAKPOINT_STREAM *Stream)
     }
 }
 
-double breakpoint_Stream_ValueAtTime(BREAKPOINT_STREAM *Stream)
+float64 breakpoint_Stream_ValueAtTime(BREAKPOINT_STREAM *Stream)
 {
-    double Value, Fraction;
+    float64 Value, Fraction;
 
     //Check if going beyond breakpoint data
     if(Stream->MorePoints == 0)

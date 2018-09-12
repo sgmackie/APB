@@ -1,8 +1,16 @@
 //TODO: Continue going through code; moving variables closer to their first use, functioning out reusable code, creating header for common functions commenting
 
+//CRT
 #include <stdio.h>
 #include <stdlib.h>
+
+//Type defines
+#include "../../../misc/include/win32_types.h"
+
+//Portsf
 #include "../../../misc/psfmaster/include/portsf.h"
+
+//Headers
 #include "../../../external/synth_waves.h"
 #include "../../../external/file_breakpoints.h"
 #include "../../../external/file_memory.h"
@@ -10,35 +18,21 @@
 //Unity build
 #include "..\code\synthesis_wave.cpp"
 #include "..\code\soundfile_breakpoints.cpp"
+
 #include "..\..\..\misc\psfmaster\portsf\portsf.c"
 #include "..\..\..\misc\psfmaster\portsf\ieee80.c"
 
 //Argument list from 0
 enum {ARG_NAME, ARG_OUTFILE, ARG_WAVEFORM, ARG_DURATION, ARG_SAMPLE_RATE, ARG_AMPLITUDE, ARG_FREQUENCY, ARG_NUM_ARGS};
 
-//Waveform type arguments
-enum {WAVE_SINE, WAVE_TRIANGLE, WAVE_SQAURE, WAVE_SAW_DOWN, WAVE_SAW_UP, WAVE_NUM_TYPES};
-
 int main(int argc, char *argv[])
 {
     //Stage 1: Declare
-    //Oscillator variables
-    double Frequency, Amplitude;
-    int WaveType;
-    WAVEOSC *TestOsc = NULL;
-
     //Breakpoint stream variables
-    double AmplitudeValue_Min, AmplitudeValue_Max;
-    BREAKPOINT_STREAM *AmplitudeStream = NULL;
-    unsigned long AmplitudeStream_Size = 0;
-    FILE *InputBreakpointFile = NULL;
+    //float64 AmplitudeValueMin, AmplitudeValueMax;
 
     //Initialise dynamic variables to defaults
-    int OutputFile = -1;
-    int ErrorCode = 0;
-    float *FramesOutput = NULL;
-    psf_format OutputFile_Format = PSF_FMT_UNKNOWN;
-    PSF_CHPEAK *PeakData = NULL; //Peak data struct from portsf
+    int8 ErrorCode = 0;
 
     printf("syntheis_sinetest.exe: Generate mono sine wave\n");
     
@@ -56,7 +50,7 @@ int main(int argc, char *argv[])
     }
 
     //Check Waveform argument  
-    WaveType = atoi(argv[ARG_WAVEFORM]);
+    int WaveType = atoi(argv[ARG_WAVEFORM]);
 
     if(WaveType < WAVE_SINE || WaveType > WAVE_NUM_TYPES)
     {
@@ -66,18 +60,16 @@ int main(int argc, char *argv[])
 
     //Stage 2: Handle output file
     //Define output file properties
-    PSF_PROPS OutputFile_Properties;
-    OutputFile_Properties.srate = atoi(argv[ARG_SAMPLE_RATE]);
+    //TODO: Finish default setting function
+    PSF_PROPS OutputFileProperties = PSF_PROPS{};
+    file_GetDefaultFileProperties(OutputFileProperties);
+    OutputFileProperties.srate = atoi(argv[ARG_SAMPLE_RATE]);
 
-    if(OutputFile_Properties.srate <= 0.0)
+    if(OutputFileProperties.srate <= 0.0)
     {
         fprintf(stderr, "Error: Sample rate must be positive\n");
         return 1;
     }
-
-    OutputFile_Properties.chans = 1;
-    OutputFile_Properties.samptype = (psf_stype) PSF_SAMP_16;
-    OutputFile_Properties.chformat = STDWAVE;    
 
     //Calculate samples required in blocks and any remainder
     double Duration = atof(argv[ARG_DURATION]);
@@ -92,18 +84,16 @@ int main(int argc, char *argv[])
     MEMORYBLOCKS SampleBlocks;
     long BufferSize = BUFFER_SIZE; //Unsigned, buffer size cannot be a negative number
 
-    file_TotalOuputSampleSize(SampleBlocks.BlocksTotal, SampleBlocks.RemainderBlocks, Duration, OutputFile_Properties.srate, BufferSize);
-
-    Frequency = atof(argv[ARG_FREQUENCY]);
+    file_TotalOuputSampleSize(SampleBlocks.BlocksTotal, SampleBlocks.RemainderBlocks, Duration, OutputFileProperties.srate, BufferSize);
 
     //Handle breakpoint file
-    InputBreakpointFile = fopen(argv[ARG_AMPLITUDE], "r");
+    FILE *InputBreakpointFile = fopen(argv[ARG_AMPLITUDE], "r");
+    float64 Amplitude = atof(argv[ARG_AMPLITUDE]);
+    BREAKPOINT_STREAM *AmplitudeStream = nullptr;
 
     //Check if number is used instead of breakpoint file
-    if(InputBreakpointFile == NULL)
+    if(InputBreakpointFile == nullptr)
     {
-        Amplitude = atof(argv[ARG_AMPLITUDE]);
-
         if(Amplitude <= 0.0 || Amplitude > 1.0)
         {
             fprintf(stderr, "Error: Amplitude values are out of range\n");
@@ -111,17 +101,18 @@ int main(int argc, char *argv[])
             goto memory_cleanup;
         }
     }
-
-    //Otherwise use breakpoint file
     else
     {
-        AmplitudeStream = breakpoint_Stream_New(InputBreakpointFile, OutputFile_Properties.srate, &AmplitudeStream_Size);
+        //Otherwise use breakpoint file
+        uint64 AmplitudeStreamSize = 0;
+
+        AmplitudeStream = breakpoint_Stream_New(InputBreakpointFile, OutputFileProperties.srate, &AmplitudeStreamSize);
     }
 
     //Call function to create oscillator
-    TestOsc = synthesis_Osc_New(OutputFile_Properties.srate);
+    WAVEOSC *TestOsc = synthesis_Osc_New(OutputFileProperties.srate);
     
-    if(TestOsc == NULL)
+    if(TestOsc == nullptr)
     {
         puts("Error: No memory for oscillator\n");
         ErrorCode++;
@@ -137,9 +128,9 @@ int main(int argc, char *argv[])
     }
 
     //Allocate output frame memory
-    FramesOutput = (float *) malloc(BufferSize * OutputFile_Properties.chans * sizeof(float));
+    float *FramesOutput = (float *) malloc(BufferSize * OutputFileProperties.chans * sizeof(float));
 
-    if(FramesOutput == NULL)
+    if(FramesOutput == nullptr)
     {
         puts("Error: No memory\n");
         ErrorCode++;
@@ -147,22 +138,22 @@ int main(int argc, char *argv[])
     }
     
     //Check extension of output file name
-    OutputFile_Format = psf_getFormatExt(argv[ARG_OUTFILE]);
+    psf_format OutputFileFormat = psf_getFormatExt(argv[ARG_OUTFILE]);
     
-    if(OutputFile_Format == PSF_FMT_UNKNOWN)
+    if(OutputFileFormat == PSF_FMT_UNKNOWN)
     {
         fprintf(stderr, "Error: output file name %s has unknown format\n", argv[ARG_OUTFILE]);
         ErrorCode++;
         goto memory_cleanup;
     }
     
-    OutputFile_Properties.format = OutputFile_Format;
+    OutputFileProperties.format = OutputFileFormat;
 
     //Stage 4: Process output file
     //Allocate memory for the peak data of the output file
-    PeakData = (PSF_CHPEAK*) malloc(OutputFile_Properties.chans * sizeof(PSF_CHPEAK));
+    PSF_CHPEAK *PeakData = (PSF_CHPEAK*) malloc(OutputFileProperties.chans * sizeof(PSF_CHPEAK));
     
-    if(PeakData == NULL)
+    if(PeakData == nullptr)
     {
         puts("Error: No memory\n");
         ErrorCode++;
@@ -170,7 +161,7 @@ int main(int argc, char *argv[])
     }
 
     //Create output file for for reading/writing
-    OutputFile = psf_sndCreate(argv[ARG_OUTFILE], &OutputFile_Properties, 0, 0, PSF_CREATE_RDWR);
+    int OutputFile = psf_sndCreate(argv[ARG_OUTFILE], &OutputFileProperties, 0, 0, PSF_CREATE_RDWR);
     
     if(OutputFile < 0)
     {
@@ -192,6 +183,7 @@ int main(int argc, char *argv[])
 
         for(long j = 0; j < BufferSize; j++)
         {
+            double Frequency = atof(argv[ARG_FREQUENCY]);
             TICKFUNCTION TickSelect = nullptr;
 
             if(AmplitudeStream)
@@ -213,16 +205,16 @@ int main(int argc, char *argv[])
 
     //Stage 6: User reporting
     //Check if any peak data was captured
-    if(psf_sndReadPeaks(OutputFile, PeakData, NULL) > 0)
+    if(psf_sndReadPeaks(OutputFile, PeakData, nullptr) > 0)
     {
         double PeakTime;
         double PeakDB;
         printf("Info: Peaks:\n");
 
         //Loop for every channel in the input file
-        for (long i = 0; i < OutputFile_Properties.chans; i++)
+        for (long i = 0; i < OutputFileProperties.chans; i++)
         {
-            PeakTime = (double) PeakData[i].pos / (double) OutputFile_Properties.srate; //Calculate the time in seconds according the input file sample rate
+            PeakTime = (double) PeakData[i].pos / (double) OutputFileProperties.srate; //Calculate the time in seconds according the input file sample rate
             PeakDB = log10(PeakData[i].val); //Calculate dB values from linear values
             printf("Channel %d:\t%.4f (%.4f dB) at %.4f seconds\n", i + 1, PeakData[i].val, PeakDB, PeakTime);
         }
