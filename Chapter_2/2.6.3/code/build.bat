@@ -10,7 +10,7 @@ if not exist %BuildDir% mkdir %BuildDir%
 pushd %BuildDir%
 
 :: Set compiler arguments
-set Files=..\code\synthesis_oscgen.cpp
+set Files=..\code\win32_oscgen.cpp
 set ObjDir=.\obj\
 
 :: Set compiler flags:
