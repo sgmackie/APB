@@ -22,9 +22,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-
-
-
-
-//TODO: Push Macbook commits
-//TODO: Add 40 minutes to Kanban + 40 minutes + 20 minutes
