@@ -16,9 +16,15 @@
 #include "../../../misc/psfmaster/portsf/portsf.c"
 #include "../../../misc/psfmaster/portsf/ieee80.c"
 
-
-
 int main(int argc, char *argv[])
 {
+    dsp_Sine(44100, 440, 0);
+
     return 0;
 }
+
+
+
+
+//TODO: Push Macbook commits
+//TODO: Add 40 minutes to Kanban + 40 minutes + 20 minutes

@@ -1,4 +1,4 @@
-#include "../external/file_memory.h"
+#include "file_memory.h"
 
 void file_GetDefaultFileProperties(PSF_PROPS &OutputFile, uint16 SampleRate)
 {

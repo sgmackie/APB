@@ -1,4 +1,4 @@
-#include "../../../external/file_breakpoints.h"
+#include "file_breakpoints.h"
 
 #define NPOINTS (64)
 
