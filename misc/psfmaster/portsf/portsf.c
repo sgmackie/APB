@@ -445,9 +445,10 @@ static int psf_wordsize(psf_stype type)
 }
 
 
-#if defined _WIN32 && defined _MSC_VER
-/* fast convergent rounding */
+//#if defined _WIN32 && defined _MSC_VER
 // Inline Assembly no longer supported by VC64bit
+#ifdef WIN32
+/* fast convergent rounding */
 __inline long psf_round(double fval)
 {
 	int result;

@@ -17,7 +17,8 @@ set ObjDir=.\obj\
 :: -Zi enable debugging info
 :: -FC use full path in diagnostics
 :: -Fo path to store Object files
-set CompilerFlags=-Zi -FC -Fo%ObjDir%
+:: -DDEBUG to enable custom debug macros
+set CompilerFlags=-Zi -FC -Fo%ObjDir% -DDEBUG
 
 :: Create Object directory if it doesn't exist
 if not exist %ObjDir% mkdir %ObjDir%

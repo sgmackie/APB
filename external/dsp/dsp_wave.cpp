@@ -2,25 +2,22 @@
 
 #define MAX_SAMPLES (6020)
 
-//TODO: Comment this! How does the phase increment work?
-
-void dsp_Sine(uint16 SampleRate, uint16 Frequency, float32 PhaseStart)
+void dsp_Sine(float32 *Samples, uint16 SampleRate, uint16 Frequency, float32 PhaseStart)
 {
-    float32 PhaseCurrent = 0;
-    float32 PhaseIncrement = Frequency * TWOPI / SampleRate;
-    float32 *Samples = (float32 *) malloc(sizeof (float32) * MAX_SAMPLES);
-
+    float32 PhaseCurrent = PhaseStart; //Initial is 0 for sine, Pi/2 for cosine
+    float32 PhaseIncrement = Frequency * TWOPI / SampleRate; //Generate 1 cycle for a given sample rate and frequency
+    
     for(int i = 0; i < MAX_SAMPLES; i++)
     {
-        Samples[i] = (float32) sin(PhaseCurrent);
-        PhaseCurrent += PhaseIncrement;
+        Samples[i] = (float32) sin(PhaseCurrent); //Start by indexing the current phase position
+        PhaseCurrent += PhaseIncrement; //Increase phase by the calculated cycle increment
 
+        //Wrap phase 2*Pi as precaution against sin(x) function on different compilers failing to wrap largescale values internally
         if(PhaseCurrent >= TWOPI)
         {
             PhaseCurrent -= TWOPI;
         }
 
-        printf("%f\n", Samples[i]);
+        // debug_PrintLine("%f", Samples[i]);
     }
 }
-
