@@ -3,7 +3,7 @@
 :: Set build directory relative to current drive and path
 set BuildDir=%~dp0..\build
 
-:: Create path if it doesn't exist
+:: Create build path if it doesn't exist
 if not exist %BuildDir% mkdir %BuildDir%
 
 :: Move to build directory
@@ -20,8 +20,12 @@ set ObjDir=.\obj\
 :: -DDEBUG to enable custom debug macros
 set CompilerFlags=-Zi -FC -Fo%ObjDir% -DDEBUG
 
-:: Create Object directory if it doesn't exist
+:: Set debug path for logging files
+set DebugDir=%~dp0..\build\debug
+
+:: Create Object and Debug directories if they don't exist
 if not exist %ObjDir% mkdir %ObjDir%
+if not exist %DebugDir% mkdir %DebugDir%
 
 :: Run Visual Studio compiler
 cl %CompilerFlags% %Files%

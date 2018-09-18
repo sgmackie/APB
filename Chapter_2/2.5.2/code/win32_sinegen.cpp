@@ -15,12 +15,20 @@
 #include "../../../external/file/file_memory.cpp"
 #include "../../../external/dsp/dsp_wave.cpp"
 
+#define MAX_SAMPLES (6020)
+
 int main(int argc, char *argv[])
 {
     float32 *Samples = (float32 *) malloc((sizeof *Samples) * MAX_SAMPLES);
+    OSCILLATOR *TestOsc = dsp_OscillatorCreate(44100);
 
-    dsp_Sine(Samples, 44100, 440, 0);
+    for(int i = 0; i < MAX_SAMPLES; i++)
+    {
+        Samples[i] = dsp_TickSine(TestOsc, 440);
 
+        //debug_PrintLine(Console, "%f", Samples[i]);
+    }
+    
     free(Samples);
 
     return 0;
