@@ -16,7 +16,7 @@ OSCILLATOR *dsp_OscillatorAlloc()
 //Initialise elements of oscillator (can be used to reset)
 void dsp_OscillatorInit(OSCILLATOR *Oscillator, uint32 SampleRate)
 {
-    Oscillator->TwoPiOverSampleRate = TWOPI / SampleRate;
+    Oscillator->TwoPiOverSampleRate = TwoPi32 / SampleRate;
     Oscillator->FrequencyCurrent = 0;
     Oscillator->PhaseCurrent = 0;
     Oscillator->PhaseIncrement = 0;
@@ -47,14 +47,14 @@ float64 dsp_TickSine(OSCILLATOR *Oscillator, float32 Frequency)
     Oscillator->PhaseCurrent += Oscillator->PhaseIncrement; //Increase phase by the calculated cycle increment
     
     //Wrap phase 2*Pi as precaution against sin(x) function on different compilers failing to wrap large scale values internally
-    if(Oscillator->PhaseCurrent >= TWOPI)
+    if(Oscillator->PhaseCurrent >= TwoPi32)
     {
-        Oscillator->PhaseCurrent -= TWOPI;
+        Oscillator->PhaseCurrent -= TwoPi32;
     }
 
     if(Oscillator->PhaseCurrent < 0)
     {
-        Oscillator->PhaseCurrent += TWOPI;
+        Oscillator->PhaseCurrent += TwoPi32;
     }
 
     return Result;

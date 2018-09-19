@@ -11,6 +11,7 @@ pushd %BuildDir%
 
 :: Set compiler arguments
 set Files=..\code\win32_sinegen.cpp
+set Libs=Ole32.lib Xaudio2.lib
 set ObjDir=.\obj\
 
 :: Set compiler flags:
@@ -28,7 +29,7 @@ if not exist %ObjDir% mkdir %ObjDir%
 if not exist %DebugDir% mkdir %DebugDir%
 
 :: Run Visual Studio compiler
-cl %CompilerFlags% %Files%
+cl %CompilerFlags% %Files% %Libs%
 
 :: Jump out of build directory
 popd

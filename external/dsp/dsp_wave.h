@@ -4,11 +4,11 @@
 #include "math.h"
 
 #ifndef M_PI
-#define PI (3.1415926535897932)
+#define Pi32 3.14159265359f
 #endif
 
 #ifndef TWOPI
-#define TWOPI (2 * PI)
+#define TwoPi32 (2 * Pi32)
 #endif
 
 //Structs
