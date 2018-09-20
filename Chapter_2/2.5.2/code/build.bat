@@ -11,7 +11,7 @@ pushd %BuildDir%
 
 :: Set compiler arguments
 set Files=..\code\win32_sinegen.cpp
-set Libs=Ole32.lib Xaudio2.lib
+set Libs=User32.lib Ole32.lib Xaudio2.lib
 set ObjDir=.\obj\
 
 :: Set compiler flags:
@@ -19,7 +19,7 @@ set ObjDir=.\obj\
 :: -FC use full path in diagnostics
 :: -Fo path to store Object files
 :: -DDEBUG to enable custom debug macros
-set CompilerFlags=-Zi -FC -Fo%ObjDir% -DDEBUG
+set CompilerFlags=-Zi -FC -Fo%ObjDir% -DDEBUG -DWIN32
 
 :: Set debug path for logging files
 set DebugDir=%~dp0..\build\debug
